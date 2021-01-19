@@ -1,2 +1,2 @@
 # node-net-simconnect
-simconnect protocol (currently testing)
+simconnect protocol (currently just testing)
