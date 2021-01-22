@@ -47,9 +47,9 @@ export class SendBuffer {
 		this.checkSize();
 	}
 	public putString(value: string, alloc: number) {
-		this.buffer.fill(0, this.pos, this.pos + alloc);
-		this.buffer.write(value, this.pos, this.pos + alloc);
-		this.pos += alloc;
+		this.buffer.fill(0, this.pos, this.pos + alloc+1);
+		this.buffer.write(value, this.pos, this.pos + alloc+1);
+		this.pos += alloc+1;
 		this.checkSize();
 	}
 	public position(pos?: number): number {

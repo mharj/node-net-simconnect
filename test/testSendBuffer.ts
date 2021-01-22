@@ -9,7 +9,7 @@ describe('test send buffer', () => {
 		const buffer = new SendBuffer();
 		expect(buffer.position()).to.be.eq(0);
 		buffer.putString('hello', 8);
-		expect(buffer.position()).to.be.eq(8);
+		expect(buffer.position()).to.be.eq(9);
 		buffer.putInt(32767);
 		// expect(buffer.position()).to.be.eq(12);
 		// console.log(buffer.getBuffer());
