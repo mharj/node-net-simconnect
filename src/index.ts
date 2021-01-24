@@ -1,0 +1,1 @@
+export type ProtocolVersion = 2 | 3 | 4;

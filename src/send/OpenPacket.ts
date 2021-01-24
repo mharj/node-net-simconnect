@@ -10,6 +10,7 @@ export class OpenPacket extends SendPacket {
 		super(scs);
 		this.buffer.putString(this.appName, 256);
 		this.buffer.putInt(0);
+		this.buffer.putByte(0);
 		this.buffer.putChar('X');
 		this.buffer.putChar('S');
 		this.buffer.putChar('F');
