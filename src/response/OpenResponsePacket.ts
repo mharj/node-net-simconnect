@@ -1,8 +1,8 @@
 import {ReadBuffer} from '../lib/ReadBuffer';
 import {SendBuffer} from '../lib/SendBuffer';
-import { AbstractResponse } from './AbstractResponse';
+import { AbstractResponse, RecvID } from './AbstractResponse';
 
-export interface IOpenPayload {
+export interface IOpenResponsePayload {
 	readonly name: string;
 	readonly appVerMajor: number;
 	readonly appVerMinor: number;
@@ -16,8 +16,8 @@ export interface IOpenPayload {
 	readonly reserved2: number;
 }
 
-export class OpenResponsePacket extends AbstractResponse<IOpenPayload> {
-    public packetId = 0x2;
+export class OpenResponsePacket extends AbstractResponse<IOpenResponsePayload> {
+    public packetId = RecvID.ID_OPEN;
 	public static from(buff: ReadBuffer) {
 		return new OpenResponsePacket({
 			name: buff.getString(256),

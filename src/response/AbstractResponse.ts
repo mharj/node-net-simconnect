@@ -48,7 +48,7 @@ interface IResponseHeader {
 const RESPONSE_HEADER_SIZE = 12;
 
 export abstract class AbstractResponse<D = {}> {
-	public abstract packetId: number;
+	public abstract packetId: RecvID;
 	protected headers: IResponseHeader | undefined;
 	protected payload: D;
 	constructor(data: D) {

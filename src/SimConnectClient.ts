@@ -2,13 +2,15 @@ import * as EventEmitter from 'events';
 import TypedEmitter from 'typed-emitter';
 import {Socket} from 'net';
 import {ReadBuffer} from './lib/ReadBuffer';
-import {OpenRequestPacket} from './request/OpenRequestPacket';
+import {IOpenRequestPayload, OpenRequestPacket} from './request/OpenRequestPacket';
 import {SendBuffer} from './lib/SendBuffer';
 import {ResponseFactory} from './response/ResponseFactory';
 import {OpenResponsePacket} from './response/OpenResponsePacket';
 import {IOpenPayload} from './response/QuitResponsePacket';
 import {RecvID} from './response/AbstractResponse';
 import {LoggerLike} from './lib/loggerLike';
+import {RequestFactory} from './request/RequestFactory';
+import {ReqID} from './request/AbstractRequest';
 
 interface ClientEvents {
 	open: (data: IOpenPayload) => void;
@@ -24,6 +26,9 @@ interface IClientProps {
 	proto: 2 | 3 | 4;
 	logger?: LoggerLike | undefined;
 }
+export const SIMCONNECT_BUILD_SP0 = 60905;
+export const SIMCONNECT_BUILD_SP1 = 61355;
+export const SIMCONNECT_BUILD_SP2_XPACK = 61259;
 
 export class SimConnectClient extends (EventEmitter as new () => TypedEmitter<ClientEvents>) {
 	private sendBuffer: SendBuffer;
@@ -49,17 +54,58 @@ export class SimConnectClient extends (EventEmitter as new () => TypedEmitter<Cl
 		this.client.on('error', this.handleError);
 	}
 
+	public close(): void {
+		if (this.client) {
+			this.client.destroy();
+		}
+	}
+
 	private handleConnected() {
 		// connect gets called twice, ensure we only send Open once
-		if (this.client && this.client.writable && !this.isOpenSent) {
+		if (!this.isOpenSent) {
 			this.isOpenSent = true;
-			new OpenRequestPacket({
-				name: this.props.name,
-				appVerMajor: 10,
-				appVerMinor: 0,
-				appBuildMajor: 1234,
-				appBuildMinor: 0,
-			}).write(this.sendBuffer, this.props.proto, this.packetIndex++);
+			let payload: IOpenRequestPayload;
+			switch (this.props.proto) {
+				case 2: {
+					payload = {
+						name: this.props.name,
+						appVerMajor: 0,
+						appVerMinor: 0,
+						appBuildMajor: SIMCONNECT_BUILD_SP0,
+						appBuildMinor: 0,
+					};
+					break;
+				}
+				case 3: {
+					payload = {
+						name: this.props.name,
+						appVerMajor: 10,
+						appVerMinor: 0,
+						appBuildMajor: SIMCONNECT_BUILD_SP1,
+						appBuildMinor: 0,
+					};
+					break;
+				}
+				case 4: {
+					payload = {
+						name: this.props.name,
+						appVerMajor: 10,
+						appVerMinor: 0,
+						appBuildMajor: SIMCONNECT_BUILD_SP2_XPACK,
+						appBuildMinor: 0,
+					};
+					break;
+				}
+				default:
+					throw new Error('wrong payload number');
+			}
+			this.sendPacket(new OpenRequestPacket(payload));
+		}
+	}
+	private sendPacket(packet: ReturnType<typeof RequestFactory.from>) {
+		if (this.client && this.client.writable) {
+			packet.write(this.sendBuffer, this.props.proto, this.packetIndex++);
+			this.props.logger && this.props.logger.debug(`send packet '${ReqID[packet.packetId]}'`);
 			this.client.write(this.sendBuffer.getBuffer());
 		}
 	}
@@ -72,10 +118,16 @@ export class SimConnectClient extends (EventEmitter as new () => TypedEmitter<Cl
 	private handlePacket(data: Buffer) {
 		const buff = new ReadBuffer(data);
 		const packet = ResponseFactory.from(buff);
-		this.props.logger && this.props.logger.debug(`packet ${packet.packetId}`);
+		this.props.logger && this.props.logger.debug(`recv packet '${RecvID[packet.packetId]}'`);
 		switch (packet.packetId) {
 			case RecvID.ID_OPEN: {
 				this.emit('open', (packet as OpenResponsePacket).data());
+				this.emit('data', packet);
+				break;
+			}
+			case RecvID.ID_EXCEPTION: {
+				this.props.logger && this.props.logger.error('Exception', packet.data());
+				break;
 			}
 			default:
 				this.emit('data', packet);

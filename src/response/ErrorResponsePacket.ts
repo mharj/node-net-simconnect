@@ -1,6 +1,6 @@
 import {ReadBuffer} from '../lib/ReadBuffer';
 import {SendBuffer} from '../lib/SendBuffer';
-import {AbstractResponse} from './AbstractResponse';
+import {AbstractResponse, RecvID} from './AbstractResponse';
 
 export enum ErrorID {
 	NONE = 0,
@@ -59,7 +59,7 @@ export interface IPayload {
 }
 
 export class ErrorResponsePacket extends AbstractResponse<IPayload> {
-	public packetId = 0x1;
+	public packetId = RecvID.ID_EXCEPTION;
 	public static from(buff: ReadBuffer) {
 		return new ErrorResponsePacket({
 			errorId: buff.getInt(),

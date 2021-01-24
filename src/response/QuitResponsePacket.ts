@@ -1,6 +1,6 @@
 import {ReadBuffer} from '../lib/ReadBuffer';
 import {SendBuffer} from '../lib/SendBuffer';
-import {AbstractResponse} from './AbstractResponse';
+import {AbstractResponse, RecvID} from './AbstractResponse';
 
 export interface IOpenPayload {
 	readonly name: string;
@@ -17,7 +17,7 @@ export interface IOpenPayload {
 }
 
 export class QuitResponsePacket extends AbstractResponse<undefined> {
-	public packetId = 0x3;
+	public packetId = RecvID.ID_QUIT;
 	public static from(buff: ReadBuffer) {
 		return new QuitResponsePacket(undefined);
 	}

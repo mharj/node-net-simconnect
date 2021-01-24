@@ -1,8 +1,8 @@
 import {ReadBuffer} from '../lib/ReadBuffer';
 import {SendBuffer} from '../lib/SendBuffer';
-import {AbstractRequest} from './AbstractRequest';
+import {AbstractRequest, ReqID} from './AbstractRequest';
 
-interface IOpenPayload {
+export interface IOpenRequestPayload {
 	readonly name: string;
 	readonly appVerMajor: number;
 	readonly appVerMinor: number;
@@ -10,8 +10,8 @@ interface IOpenPayload {
 	readonly appBuildMinor: number;
 }
 
-export class OpenRequestPacket extends AbstractRequest<IOpenPayload> {
-	public packetId = 0x1;
+export class OpenRequestPacket extends AbstractRequest<IOpenRequestPayload> {
+	public packetId = ReqID.ID_OPEN;
 	public static from(buff: ReadBuffer) {
 		const name = buff.getString(256);
 		buff.getInt();

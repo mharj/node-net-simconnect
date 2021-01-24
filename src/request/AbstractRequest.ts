@@ -15,7 +15,7 @@ interface IRequestHeader {
 const RESPONSE_HEADER_SIZE = 16;
 
 export abstract class AbstractRequest<D = {}> {
-	public abstract packetId: number;
+	public abstract packetId: ReqID;
 	protected headers: IRequestHeader | undefined;
 	protected payload: D;
 	constructor(data: D) {
@@ -33,7 +33,7 @@ export abstract class AbstractRequest<D = {}> {
 		buff.position(0);
 		buff.putInt(size);
 		buff.putInt(protocol);
-		buff.putInt(this.packetId);
+		buff.putInt(0xf0000000 | this.packetId);
 		buff.putInt(index);
 	}
 	public get(key: keyof D): D[keyof D] {
