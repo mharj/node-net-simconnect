@@ -19,41 +19,47 @@ export enum RecvID {
 	ID_CUSTOM_ACTION = 14,
 	ID_SYSTEM_STATE = 15,
 	ID_CLIENT_DATA = 16,
-	/** @since 0.5 */
+
 	ID_EVENT_WEATHER_MODE = 17,
-	/** @since 0.5 */
+
 	ID_AIRPORT_LIST = 18,
-	/** @since 0.5 */
+
 	ID_VOR_LIST = 19,
-	/** @since 0.5 */
+
 	ID_NDB_LIST = 20,
-	/** @since 0.5 */
+
 	ID_WAYPOINT_LIST = 21,
-	/** @since 0.7 */
+
 	ID_EVENT_MULTIPLAYER_SERVER_STARTED = 22,
-	/** @since 0.7 */
+
 	ID_EVENT_MULTIPLAYER_CLIENT_STARTED = 23,
-	/** @since 0.7 */
+
 	ID_EVENT_MULTIPLAYER_SESSION_ENDED = 24,
-	/** @since 0.7 */
+
 	ID_EVENT_RACE_END = 25,
-	/** @since 0.7 */
+
 	ID_EVENT_RACE_LAP = 26,
 }
+
+export interface ResponseAction {
+	packetId: RecvID;
+}
+
 interface IResponseHeader {
 	readonly size: number;
 	readonly protocol: number;
 	readonly id: number;
 }
-const RESPONSE_HEADER_SIZE = 12;
+export const RESPONSE_HEADER_SIZE = 12;
 
-export abstract class AbstractResponse<D = {}> {
-	public abstract packetId: RecvID;
+export abstract class AbstractResponse<R = RecvID, D = {}> {
+	public abstract packetId: number;
 	protected headers: IResponseHeader | undefined;
 	protected payload: D;
 	constructor(data: D) {
 		this.payload = data;
 	}
+	protected abstract getId(): number;
 	protected abstract handleWrite(send: SendBuffer): void;
 	public write(send: SendBuffer, protocol: ProtocolVersion) {
 		send.reset(); // clear pos and size
@@ -61,7 +67,7 @@ export abstract class AbstractResponse<D = {}> {
 		this.handleWrite(send);
 		this.writeHeader(send, protocol);
 	}
-	private writeHeader(buff: SendBuffer, protocol: ProtocolVersion) {
+	protected writeHeader(buff: SendBuffer, protocol: ProtocolVersion) {
 		const size = buff.position();
 		buff.position(0);
 		buff.putInt(size);

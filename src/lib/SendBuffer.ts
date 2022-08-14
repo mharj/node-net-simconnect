@@ -15,8 +15,21 @@ export class SendBuffer {
 		this.pos = this.buffer.writeInt32LE(value, this.pos);
 		this.checkSize();
 	}
+	public putUInt(value: number) {
+		this.pos = this.buffer.writeUInt32LE(value, this.pos);
+		this.checkSize();
+	}
 	public putLong(value: bigint) {
 		this.pos = this.buffer.writeBigInt64LE(value, this.pos);
+		this.checkSize();
+	}
+	public putFloat(value: number) {
+		this.pos = this.buffer.writeFloatLE(value, this.pos);
+		this.checkSize();
+	}
+
+	public putDouble(value: number) {
+		this.pos = this.buffer.writeDoubleLE(value, this.pos);
 		this.checkSize();
 	}
 	public putChar(value: string) {

@@ -58,7 +58,7 @@ export interface IPayload {
 	readonly index: number;
 }
 
-export class ErrorResponsePacket extends AbstractResponse<IPayload> {
+export class ErrorResponsePacket extends AbstractResponse<RecvID.ID_EXCEPTION, IPayload> {
 	public packetId = RecvID.ID_EXCEPTION;
 	public static from(buff: ReadBuffer) {
 		return new ErrorResponsePacket({
@@ -66,6 +66,9 @@ export class ErrorResponsePacket extends AbstractResponse<IPayload> {
 			sendID: buff.getInt(),
 			index: buff.getInt(),
 		});
+	}
+	protected getId() {
+		return RecvID.ID_EXCEPTION;
 	}
 	protected handleWrite(send: SendBuffer): void {
 		const {errorId, sendID, index} = this.payload;

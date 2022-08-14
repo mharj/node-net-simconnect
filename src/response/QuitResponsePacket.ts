@@ -1,6 +1,6 @@
 import {ReadBuffer} from '../lib/ReadBuffer';
 import {SendBuffer} from '../lib/SendBuffer';
-import {AbstractResponse, RecvID} from './AbstractResponse';
+import {AbstractResponse, RecvID, ResponseAction} from './AbstractResponse';
 
 export interface IOpenPayload {
 	readonly name: string;
@@ -16,7 +16,10 @@ export interface IOpenPayload {
 	readonly reserved2: number;
 }
 
-export class QuitResponsePacket extends AbstractResponse<undefined> {
+export class QuitResponsePacket extends AbstractResponse<RecvID, undefined> implements ResponseAction {
+	protected getId(): number {
+		throw new Error('Method not implemented.');
+	}
 	public packetId = RecvID.ID_QUIT;
 	public static from(buff: ReadBuffer) {
 		return new QuitResponsePacket(undefined);

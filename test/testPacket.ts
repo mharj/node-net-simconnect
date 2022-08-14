@@ -9,8 +9,8 @@ const hexStreamOpenResponse = Buffer.from(
 	'3401000004000000020000004d6963726f736f667420466c696768742053696d756c61746f7220580000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000a0000000000000097f40000000000000a0000000000000097f40000000000004301000000000000',
 	'hex',
 );
-
-const hexStramQuitResponse = Buffer.from('0c0000000400000003000000', 'hex');
+const hexStreamQuitResponse = Buffer.from('0c0000000400000003000000', 'hex');
+const hexStreamFrameResponse = Buffer.from('200000000400000007000000ffffffff010000000000000092d8b9420000803f', 'hex');
 
 describe('test packet stuff', () => {
 	describe('responses', () => {
@@ -24,15 +24,24 @@ describe('test packet stuff', () => {
 		});
 		it('test quit response packet', () => {
 			const sendBuffer = new SendBuffer();
-			const readBuffer = new ReadBuffer(hexStramQuitResponse);
+			const readBuffer = new ReadBuffer(hexStreamQuitResponse);
 			const packet = ResponseFactory.from(readBuffer);
 			expect(packet.packetId).to.be.eq(3);
 			packet.write(sendBuffer, 4);
-			expect(hexStramQuitResponse.compare(sendBuffer.getBuffer())).to.be.eq(0);
+			expect(hexStreamQuitResponse.compare(sendBuffer.getBuffer())).to.be.eq(0);
+		});
+		it('test frame response packet', () => {
+			const sendBuffer = new SendBuffer();
+			const readBuffer = new ReadBuffer(hexStreamFrameResponse);
+			const packet = ResponseFactory.from(readBuffer);
+			expect(packet.packetId).to.be.eq(0x07);
+			console.log(packet);
+			packet.write(sendBuffer, 4);
+			expect(hexStreamFrameResponse.compare(sendBuffer.getBuffer())).to.be.eq(0);
 		});
 	});
 	describe('requests', () => {
-/* 		it('test quit response packet', () => {
+		/* 		it('test quit response packet', () => {
 			const sendBuffer = new SendBuffer();
 			const readBuffer = new ReadBuffer(hexStreamOpenResponse);
 			const packet = ResponseFactory.from(readBuffer);

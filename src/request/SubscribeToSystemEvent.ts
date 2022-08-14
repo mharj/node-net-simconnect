@@ -10,20 +10,19 @@ export interface IOpenRequestPayload {
 	readonly appBuildMinor: number;
 }
 
-export class OpenRequestPacket extends AbstractRequest<IOpenRequestPayload> {
+export class SubscribeToSystemEvent extends AbstractRequest<IOpenRequestPayload> {
 	public packetId = ReqID.ID_OPEN;
 	public static from(buff: ReadBuffer) {
 		const name = buff.getString(256);
-		buff.getInt(); // ??
-		buff.getChar(); // 0
-		buff.getChar(); // X
-		buff.getChar(); // S
-		buff.getChar(); // F
+		buff.getInt();
+		buff.getChar();
+		buff.getChar();
+		buff.getChar();
 		const appVerMajor = buff.getInt();
 		const appVerMinor = buff.getInt();
 		const appBuildMajor = buff.getInt();
 		const appBuildMinor = buff.getInt();
-		return new OpenRequestPacket({
+		return new SubscribeToSystemEvent({
 			name,
 			appVerMajor,
 			appVerMinor,
@@ -34,7 +33,7 @@ export class OpenRequestPacket extends AbstractRequest<IOpenRequestPayload> {
 	protected handleWrite(send: SendBuffer): void {
 		const {name, appVerMajor, appVerMinor, appBuildMajor, appBuildMinor} = this.payload;
 		send.putString(name, 256);
-		send.putInt(0); // ??
+		send.putInt(0);
 		send.putByte(0);
 		send.putChar('X');
 		send.putChar('S');

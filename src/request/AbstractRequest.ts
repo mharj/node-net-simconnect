@@ -2,7 +2,9 @@ import {ProtocolVersion} from '..';
 import {SendBuffer} from '../lib/SendBuffer';
 
 export enum ReqID {
-	ID_OPEN = 1,
+	ID_OPEN = 0x1,
+	ID_SUB_SYSTEM_EVENT = 0x17,
+	ID_UNSUB_SYSTEM_EVENT = 0x18,
 }
 
 interface IRequestHeader {
@@ -12,7 +14,7 @@ interface IRequestHeader {
 	readonly index: number;
 }
 
-const RESPONSE_HEADER_SIZE = 16;
+export const REQUEST_HEADER_SIZE = 16;
 
 export abstract class AbstractRequest<D = {}> {
 	public abstract packetId: ReqID;
@@ -24,7 +26,7 @@ export abstract class AbstractRequest<D = {}> {
 
 	protected abstract handleWrite(send: SendBuffer): void;
 	public write(send: SendBuffer, protocol: ProtocolVersion, index: number) {
-		send.position(RESPONSE_HEADER_SIZE);
+		send.position(REQUEST_HEADER_SIZE);
 		this.handleWrite(send);
 		this.writeHeader(send, protocol, index);
 	}

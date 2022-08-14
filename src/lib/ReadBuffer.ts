@@ -22,6 +22,11 @@ export class ReadBuffer {
 		this.pos += 4;
 		return data;
 	}
+	public getUInt(): number {
+		const data = this.buff.readUInt32LE(this.pos);
+		this.pos += 4;
+		return data;
+	}
 	public getLong(): bigint {
 		const data = this.buff.readBigInt64LE(this.pos);
 		this.pos += 8;

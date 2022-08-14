@@ -1,11 +1,12 @@
 import {ReadBuffer} from '../lib/ReadBuffer';
 import {RecvID} from './AbstractResponse';
 import {ErrorResponsePacket} from './ErrorResponsePacket';
+import {FrameEventResponse} from './events/FrameEventResponse';
 import {OpenResponsePacket} from './OpenResponsePacket';
 import {QuitResponsePacket} from './QuitResponsePacket';
 
 export class ResponseFactory {
-	public static from(buff: ReadBuffer) {
+	public static from(buff: ReadBuffer): ErrorResponsePacket | OpenResponsePacket | QuitResponsePacket | FrameEventResponse {
 		const headers = this.readHeaders(buff);
 		switch (headers.id) {
 			case RecvID.ID_EXCEPTION: {
@@ -16,6 +17,9 @@ export class ResponseFactory {
 			}
 			case RecvID.ID_QUIT: {
 				return QuitResponsePacket.from(buff);
+			}
+			case RecvID.ID_EVENT_FRAME: {
+				return FrameEventResponse.from(buff);
 			}
 			default:
 				throw new Error('unknown res packet id: ' + headers.id);

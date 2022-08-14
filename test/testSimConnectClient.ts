@@ -15,12 +15,6 @@ describe('test Sim Connect client', () => {
 	before(() => {
 		scs = new SimConnectServer({port: 1337, name: 'Microsoft Flight Simulator X'});
 		scs.listen();
-/* 		tcpServer = createServer(function (socket) {
-			socket.on('data', (data) => {
-				socket.write(hexFSXOpenRes);
-			});
-		});
-		tcpServer.listen(1337, '127.0.0.1'); */
 	});
 	it('should connect to tcp socket and handle Open response', (done) => {
 		const client = new SimConnectClient({name: 'unit-test', hostname: '127.0.0.1', port: 1337, proto: 2});
