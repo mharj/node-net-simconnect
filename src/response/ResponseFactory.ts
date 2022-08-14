@@ -5,28 +5,42 @@ import {FrameEventResponse} from './events/FrameEventResponse';
 import {OpenResponsePacket} from './OpenResponsePacket';
 import {QuitResponsePacket} from './QuitResponsePacket';
 
+export type ResPacketTypes = ErrorResponsePacket | OpenResponsePacket | QuitResponsePacket | FrameEventResponse;
+
 export class ResponseFactory {
-	public static from(buff: ReadBuffer): ErrorResponsePacket | OpenResponsePacket | QuitResponsePacket | FrameEventResponse {
-		const headers = this.readHeaders(buff);
-		switch (headers.id) {
-			case RecvID.ID_EXCEPTION: {
-				return ErrorResponsePacket.from(buff);
+	public static from(buff: ReadBuffer): ResPacketTypes[] {
+		const packets: ResPacketTypes[] = [];
+		buff.position(0);
+		while (buff.position() < buff.length()) {
+			let startPos = buff.position();
+			const headers = this.readHeaders(buff);
+			switch (headers.id) {
+				case RecvID.EXCEPTION: {
+					packets.push(ErrorResponsePacket.from(buff));
+					break;
+				}
+				case RecvID.OPEN: {
+					packets.push(OpenResponsePacket.from(buff));
+					break;
+				}
+				case RecvID.QUIT: {
+					packets.push(QuitResponsePacket.from(buff));
+					break;
+				}
+				case RecvID.EVENT_FRAME: {
+					packets.push(FrameEventResponse.from(buff));
+					break;
+				}
+				default:
+					throw new Error('unknown res packet id: ' + headers.id);
 			}
-			case RecvID.ID_OPEN: {
-				return OpenResponsePacket.from(buff);
+			if (startPos + headers.size !== buff.position()) {
+				throw new Error(`wrong packet size on ${RecvID[headers.id]} size: ${headers.size} read: ${buff.position() - startPos}`);
 			}
-			case RecvID.ID_QUIT: {
-				return QuitResponsePacket.from(buff);
-			}
-			case RecvID.ID_EVENT_FRAME: {
-				return FrameEventResponse.from(buff);
-			}
-			default:
-				throw new Error('unknown res packet id: ' + headers.id);
 		}
+		return packets;
 	}
 	private static readHeaders(buff: ReadBuffer) {
-		buff.position(0);
 		return {
 			size: buff.getInt(),
 			protocol: buff.getInt(),

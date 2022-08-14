@@ -1,44 +1,37 @@
 import {ProtocolVersion} from '..';
 import {SendBuffer} from '../lib/SendBuffer';
 
+/**
+ * https://docs.flightsimulator.com/html/Programming_Tools/SimConnect/API_Reference/Structures_And_Enumerations/SIMCONNECT_RECV_ID.htm
+ */
 export enum RecvID {
-	ID_NULL = 0,
-	ID_EXCEPTION = 1,
-	ID_OPEN = 2,
-	ID_QUIT = 3,
-	ID_EVENT = 4,
-	ID_EVENT_OBJECT_ADDREMOVE = 5,
-	ID_EVENT_FILENAME = 6,
-	ID_EVENT_FRAME = 7,
-	ID_SIMOBJECT_DATA = 8,
-	ID_SIMOBJECT_DATA_BYTYPE = 9,
-	ID_WEATHER_OBSERVATION = 10,
-	ID_CLOUD_STATE = 11,
-	ID_ASSIGNED_OBJECT_ID = 12,
-	ID_RESERVED_KEY = 13,
-	ID_CUSTOM_ACTION = 14,
-	ID_SYSTEM_STATE = 15,
-	ID_CLIENT_DATA = 16,
-
-	ID_EVENT_WEATHER_MODE = 17,
-
-	ID_AIRPORT_LIST = 18,
-
-	ID_VOR_LIST = 19,
-
-	ID_NDB_LIST = 20,
-
-	ID_WAYPOINT_LIST = 21,
-
-	ID_EVENT_MULTIPLAYER_SERVER_STARTED = 22,
-
-	ID_EVENT_MULTIPLAYER_CLIENT_STARTED = 23,
-
-	ID_EVENT_MULTIPLAYER_SESSION_ENDED = 24,
-
-	ID_EVENT_RACE_END = 25,
-
-	ID_EVENT_RACE_LAP = 26,
+	NULL = 0,
+	EXCEPTION = 1,
+	OPEN = 2,
+	QUIT = 3,
+	EVENT = 4,
+	EVENT_OBJECT_ADDREMOVE = 5,
+	EVENT_FILENAME = 6,
+	EVENT_FRAME = 7,
+	SIMOBJECT_DATA = 8,
+	SIMOBJECT_DATA_BYTYPE = 9,
+	WEATHER_OBSERVATION = 10,
+	CLOUD_STATE = 11,
+	ASSIGNED_OBJECT_ID = 12,
+	RESERVED_KEY = 13,
+	CUSTOM_ACTION = 14,
+	SYSTEM_STATE = 15,
+	CLIENT_DATA = 16,
+	EVENT_WEATHER_MODE = 17,
+	AIRPORT_LIST = 18,
+	VOR_LIST = 19,
+	NDB_LIST = 20,
+	WAYPOINT_LIST = 21,
+	EVENT_MULTIPLAYER_SERVER_STARTED = 22,
+	EVENT_MULTIPLAYER_CLIENT_STARTED = 23,
+	EVENT_MULTIPLAYER_SESSION_ENDED = 24,
+	EVENT_RACE_END = 25,
+	EVENT_RACE_LAP = 26,
 }
 
 export interface ResponseAction {
@@ -59,7 +52,7 @@ export abstract class AbstractResponse<R = RecvID, D = {}> {
 	constructor(data: D) {
 		this.payload = data;
 	}
-	protected abstract getId(): number;
+
 	protected abstract handleWrite(send: SendBuffer): void;
 	public write(send: SendBuffer, protocol: ProtocolVersion) {
 		send.reset(); // clear pos and size

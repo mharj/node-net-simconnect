@@ -17,10 +17,7 @@ export interface IOpenResponsePayload {
 }
 
 export class OpenResponsePacket extends AbstractResponse<RecvID, IOpenResponsePayload> implements ResponseAction {
-	protected getId(): number {
-		throw new Error('Method not implemented.');
-	}
-	public packetId = RecvID.ID_OPEN;
+	public packetId = RecvID.OPEN;
 	public static from(buff: ReadBuffer) {
 		return new OpenResponsePacket({
 			name: buff.getString(256),

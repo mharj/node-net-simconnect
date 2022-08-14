@@ -53,4 +53,11 @@ export class ReadBuffer {
 		}
 		return this.pos;
 	}
+	public length() {
+		return this.buff.length;
+	}
+	public getBuffer() {
+		return this.buff;
+	}
+
 }

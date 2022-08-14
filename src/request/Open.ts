@@ -2,7 +2,7 @@ import {ReadBuffer} from '../lib/ReadBuffer';
 import {SendBuffer} from '../lib/SendBuffer';
 import {AbstractRequest, ReqID} from './AbstractRequest';
 
-export interface IOpenRequestPayload {
+export interface IOpenRequestPayload extends Record<string, unknown> {
 	readonly name: string;
 	readonly appVerMajor: number;
 	readonly appVerMinor: number;
@@ -10,8 +10,15 @@ export interface IOpenRequestPayload {
 	readonly appBuildMinor: number;
 }
 
-export class OpenRequestPacket extends AbstractRequest<IOpenRequestPayload> {
-	public packetId = ReqID.ID_OPEN;
+/**
+ * https://docs.flightsimulator.com/html/Programming_Tools/SimConnect/API_Reference/General/SimConnect_Open.htm
+ */
+
+export class Open extends AbstractRequest<ReqID.ID_OPEN, IOpenRequestPayload> {
+	get packetId(): ReqID.ID_OPEN {
+		return ReqID.ID_OPEN;
+	}
+
 	public static from(buff: ReadBuffer) {
 		const name = buff.getString(256);
 		buff.getInt(); // ??
@@ -23,7 +30,7 @@ export class OpenRequestPacket extends AbstractRequest<IOpenRequestPayload> {
 		const appVerMinor = buff.getInt();
 		const appBuildMajor = buff.getInt();
 		const appBuildMinor = buff.getInt();
-		return new OpenRequestPacket({
+		return new Open({
 			name,
 			appVerMajor,
 			appVerMinor,

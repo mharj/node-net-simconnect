@@ -17,10 +17,7 @@ export interface IOpenPayload {
 }
 
 export class QuitResponsePacket extends AbstractResponse<RecvID, undefined> implements ResponseAction {
-	protected getId(): number {
-		throw new Error('Method not implemented.');
-	}
-	public packetId = RecvID.ID_QUIT;
+	public packetId = RecvID.QUIT;
 	public static from(buff: ReadBuffer) {
 		return new QuitResponsePacket(undefined);
 	}

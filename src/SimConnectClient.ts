@@ -2,23 +2,29 @@ import * as EventEmitter from 'events';
 import TypedEmitter from 'typed-emitter';
 import {Socket} from 'net';
 import {ReadBuffer} from './lib/ReadBuffer';
-import {IOpenRequestPayload, OpenRequestPacket} from './request/OpenRequestPacket';
+import {IOpenRequestPayload, Open} from './request/Open';
 import {SendBuffer} from './lib/SendBuffer';
-import {ResponseFactory} from './response/ResponseFactory';
+import {ResPacketTypes, ResponseFactory} from './response/ResponseFactory';
 import {OpenResponsePacket} from './response/OpenResponsePacket';
 import {IOpenPayload} from './response/QuitResponsePacket';
 import {RecvID} from './response/AbstractResponse';
 import {LoggerLike} from './lib/loggerLike';
-import {RequestFactory} from './request/RequestFactory';
+import {ReqPacketTypes} from './request/';
 import {ReqID} from './request/AbstractRequest';
-import {EventResponse, isEventResponse} from './response/events';
+import {AnyEvent, isEventResponse} from './response/events';
+import {SubscribeToSystemEvent} from './request/SubscribeToSystemEvent';
+import {ITextPayload, Text} from './request/Text';
+import {SystemEventName} from './types/SystemEventName';
+import {AddToDataDefinition, IAddToDataDefinitionPayload} from './request/AddToDataDefinition';
+import {OptionalExceptFor} from './types/helpper';
+import {IRequestDataOnSimObjectPayload, RequestDataOnSimObject} from './request/RequestDataOnSimObject';
 
 interface ClientEvents {
 	open: (data: IOpenPayload) => void;
 	close: (wasError: boolean) => void;
 	error: (error: Error) => void;
-	data: (payload: ReturnType<typeof ResponseFactory.from>) => void;
-	event: (packet: EventResponse) => void;
+	data: (payload: ResPacketTypes) => void;
+	event: (e: AnyEvent) => void;
 }
 
 interface IClientProps {
@@ -72,10 +78,9 @@ export class SimConnectClient extends (EventEmitter as new () => TypedEmitter<Cl
 		}
 	}
 
-	private handleConnected() {
+	private async handleConnected(): Promise<void> {
 		// connect gets called twice, ensure we only send Open once
 		if (!this.isOpenSent) {
-			this.connectPromiseResolve?.();
 			this.isOpenSent = true;
 			let payload: IOpenRequestPayload;
 			switch (this.props.proto) {
@@ -112,16 +117,55 @@ export class SimConnectClient extends (EventEmitter as new () => TypedEmitter<Cl
 				default:
 					throw new Error('wrong payload number');
 			}
-			this.sendPacket(new OpenRequestPacket(payload));
+			await this.sendPacket(new Open(payload));
 		}
 	}
-	private sendPacket(packet: ReturnType<typeof RequestFactory.from>) {
-		if (this.client && this.client.writable) {
-			packet.write(this.sendBuffer, this.props.proto, this.packetIndex++);
-			this.props.logger?.debug(`send packet '${ReqID[packet.packetId]}'`);
-			this.client.write(this.sendBuffer.getBuffer());
-		}
+	public subscribeToSystemEvent(clientEventID: number, name: SystemEventName): Promise<void> {
+		return this.sendPacket(new SubscribeToSystemEvent({clientEventID, name}));
 	}
+
+	public Text(payload: ITextPayload) {
+		this.sendPacket(new Text(payload));
+	}
+
+	public addToDataDefinition(data: OptionalExceptFor<IAddToDataDefinitionPayload, 'defineID' | 'datumName' | 'unitsName' | 'datumType'>): Promise<void> {
+		return this.sendPacket(new AddToDataDefinition({fEpsilon: 0, datumID: -1, ...data}));
+	}
+
+	public requestDataOnSimObject(data: OptionalExceptFor<IRequestDataOnSimObjectPayload, 'requestID' | 'defineID' | 'objectID' | 'period'>): Promise<void> {
+		return this.sendPacket(new RequestDataOnSimObject({flags: 0, origin: 0, interval: 0, limit: 0, ...data}));
+	}
+
+	public requestClientData(
+		clientDataID: number,
+		dataRequestID: number,
+		clientDataDefineID: number,
+		period: number,
+		flags: number,
+		origin: number,
+		interval: number,
+		limit: number,
+	) {
+		// TODO: implement
+	}
+
+	private sendPacket(packet: ReqPacketTypes): Promise<void> {
+		return new Promise((resolve, reject) => {
+			if (this.client && this.client.writable) {
+				this.sendBuffer.reset();
+				packet.write(this.sendBuffer, this.props.proto, this.packetIndex++);
+				this.props.logger?.debug(`SCC: send '${ReqID[packet.packetId]}'`);
+				this.client.write(this.sendBuffer.getBuffer(), (err) => {
+					if (err) {
+						reject(err);
+					} else {
+						resolve();
+					}
+				});
+			}
+		});
+	}
+
 	private handleError(error: Error) {
 		this.connectPromiseReject?.(error);
 		this.connectPromise = undefined;
@@ -133,26 +177,29 @@ export class SimConnectClient extends (EventEmitter as new () => TypedEmitter<Cl
 	}
 	private handlePacket(data: Buffer) {
 		const buff = new ReadBuffer(data);
-		const packet = ResponseFactory.from(buff);
-		this.props.logger && this.props.logger.debug(`recv packet '${RecvID[packet.packetId]}'`);
-		switch (packet.packetId) {
-			case RecvID.ID_OPEN: {
-				this.emit('open', (packet as OpenResponsePacket).data());
-				this.emit('data', packet);
-				break;
-			}
-			case RecvID.ID_EXCEPTION: {
-				this.props.logger && this.props.logger.error('Exception', packet.data());
-				break;
-			}
-			case RecvID.ID_EVENT_FRAME: {
-				if (isEventResponse(packet)) {
-					this.emit('event', packet);
+		const packets = ResponseFactory.from(buff);
+		for (const packet of packets) {
+			this.props.logger?.debug(`SCC: recv packet '${RecvID[packet.packetId]}'`);
+			switch (packet.packetId) {
+				case RecvID.OPEN: {
+					this.emit('open', (packet as OpenResponsePacket).data());
+					this.connectPromiseResolve?.();
+					break;
 				}
-				break;
+				case RecvID.EXCEPTION: {
+					this.props.logger && this.props.logger.error('Exception', packet.data());
+					break;
+				}
+				case RecvID.EVENT_FRAME: {
+					if (isEventResponse(packet)) {
+						this.emit('event', packet.getEvent());
+					}
+					this.emit('data', packet);
+					break;
+				}
+				default:
+					this.emit('data', packet);
 			}
-			default:
-				this.emit('data', packet);
 		}
 	}
 }
