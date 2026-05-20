@@ -1,15 +1,15 @@
-import {Server, createServer, Socket} from 'net';
+import {createServer, type Server, type Socket} from 'net';
+import type {ProtocolVersion} from '.';
+import type {LoggerLike} from './lib/loggerLike';
 import {ReadBuffer} from './lib/ReadBuffer';
 import {SendBuffer} from './lib/SendBuffer';
+import {ReqID} from './request/AbstractRequest';
 import {RequestFactory} from './request/RequestFactory';
+import type {ISubSystemEventRequestPayload} from './request/SubscribeToSystemEvent';
+import {FrameEventResponse} from './response/events/FrameEventResponse';
 import {OpenResponsePacket} from './response/OpenResponsePacket';
 import {QuitResponsePacket} from './response/QuitResponsePacket';
-import {ProtocolVersion} from '.';
-import {ReqID} from './request/AbstractRequest';
-import {LoggerLike} from './lib/loggerLike';
-import {FrameEventResponse} from './response/events/FrameEventResponse';
 import {TextType} from './types/TextType';
-import {ISubSystemEventRequestPayload} from './request/SubscribeToSystemEvent';
 
 export interface IServerProps {
 	port: number;
@@ -33,7 +33,7 @@ export class SimConnectServer {
 	private props;
 	private server: Server;
 	private protoVersion: ProtocolVersion = 4;
-	constructor(props: IServerProps) {
+	public constructor(props: IServerProps) {
 		this.props = props;
 		this.buffer = new SendBuffer();
 		this.server = createServer((socket) => {

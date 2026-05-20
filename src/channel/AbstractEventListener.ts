@@ -1,7 +1,7 @@
-import {ProtocolVersion} from '..';
-import {SendBuffer} from '../lib/SendBuffer';
-import {ReqID, REQUEST_HEADER_SIZE} from '../request/AbstractRequest';
-import {RecvID, RESPONSE_HEADER_SIZE} from '../response/AbstractResponse';
+import type {ProtocolVersion} from '..';
+import type {SendBuffer} from '../lib/SendBuffer';
+import {REQUEST_HEADER_SIZE, type ReqID} from '../request/AbstractRequest';
+import {RESPONSE_HEADER_SIZE, type RecvID} from '../response/AbstractResponse';
 
 export abstract class AbstractEventListener<P = unknown, D = {}> {
 	public abstract reqId: ReqID;
@@ -10,7 +10,7 @@ export abstract class AbstractEventListener<P = unknown, D = {}> {
 	protected reqPayload: P;
 	protected resPayload: D | undefined;
 
-	constructor(channelId: number, data: P) {
+	public constructor(channelId: number, data: P) {
 		this.channelId = channelId;
 		this.reqPayload = data;
 	}

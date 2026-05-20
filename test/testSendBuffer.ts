@@ -1,6 +1,4 @@
-process.env.NODE_ENV = 'test';
-import {expect} from 'chai';
-import 'mocha';
+import {beforeAll, describe, expect, it} from 'vitest';
 
 import {SendBuffer} from '../src/lib/SendBuffer';
 

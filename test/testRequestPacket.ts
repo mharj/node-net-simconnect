@@ -1,11 +1,10 @@
-process.env.NODE_ENV = 'test';
-import {expect} from 'chai';
-import 'mocha';
+import {describe, expect, it} from 'vitest';
 import {ReadBuffer} from '../src/lib/ReadBuffer';
 import {SendBuffer} from '../src/lib/SendBuffer';
-import { ReqID } from '../src/request/AbstractRequest';
+import {ReqID} from '../src/request/AbstractRequest';
 import {RequestFactory} from '../src/request/RequestFactory';
 import {SubscribeToSystemEvent} from '../src/request/SubscribeToSystemEvent';
+
 // import {ResponseFactory} from '../src/response/ResponseFactory';
 
 const reqSubSystemEvent = Buffer.from(

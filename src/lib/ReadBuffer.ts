@@ -1,7 +1,7 @@
 export class ReadBuffer {
 	private buff: Buffer;
 	private pos = 0;
-	constructor(buffer: Buffer) {
+	public constructor(buffer: Buffer) {
 		this.buff = buffer;
 	}
 	public getByte(): number {

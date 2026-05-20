@@ -1,30 +1,29 @@
-import * as EventEmitter from 'events';
-import TypedEmitter from 'typed-emitter';
+import {EventEmitter} from 'events';
 import {Socket} from 'net';
+import type {LoggerLike} from './lib/loggerLike';
 import {ReadBuffer} from './lib/ReadBuffer';
-import {IOpenRequestPayload, Open} from './request/Open';
 import {SendBuffer} from './lib/SendBuffer';
-import {ResPacketTypes, ResponseFactory} from './response/ResponseFactory';
-import {OpenResponsePacket} from './response/OpenResponsePacket';
-import {IOpenPayload} from './response/QuitResponsePacket';
-import {RecvID} from './response/AbstractResponse';
-import {LoggerLike} from './lib/loggerLike';
-import {ReqPacketTypes} from './request/';
+import type {ReqPacketTypes} from './request/';
 import {ReqID} from './request/AbstractRequest';
-import {AnyEvent, isEventResponse} from './response/events';
+import {AddToDataDefinition, type IAddToDataDefinitionPayload} from './request/AddToDataDefinition';
+import {type IOpenRequestPayload, Open} from './request/Open';
+import {type IRequestDataOnSimObjectPayload, RequestDataOnSimObject} from './request/RequestDataOnSimObject';
 import {SubscribeToSystemEvent} from './request/SubscribeToSystemEvent';
-import {ITextPayload, Text} from './request/Text';
-import {SystemEventName} from './types/SystemEventName';
-import {AddToDataDefinition, IAddToDataDefinitionPayload} from './request/AddToDataDefinition';
-import {OptionalExceptFor} from './types/helpper';
-import {IRequestDataOnSimObjectPayload, RequestDataOnSimObject} from './request/RequestDataOnSimObject';
+import {type ITextPayload, Text} from './request/Text';
+import {RecvID} from './response/AbstractResponse';
+import {type AnyEvent, isEventResponse} from './response/events';
+import type {OpenResponsePacket} from './response/OpenResponsePacket';
+import type {IOpenPayload} from './response/QuitResponsePacket';
+import {type ResPacketTypes, ResponseFactory} from './response/ResponseFactory';
+import type {OptionalExceptFor} from './types/helpper';
+import type {SystemEventName} from './types/SystemEventName';
 
-interface ClientEvents {
-	open: (data: IOpenPayload) => void;
-	close: (wasError: boolean) => void;
-	error: (error: Error) => void;
-	data: (payload: ResPacketTypes) => void;
-	event: (e: AnyEvent) => void;
+interface ClientEventMap {
+	open: [data: IOpenPayload]
+	close: [wasError: boolean];
+	error: [error: Error];
+	data: [payload: ResPacketTypes];
+	event: [e: AnyEvent];
 }
 
 interface IClientProps {
@@ -38,7 +37,7 @@ export const SIMCONNECT_BUILD_SP0 = 60905;
 export const SIMCONNECT_BUILD_SP1 = 61355;
 export const SIMCONNECT_BUILD_SP2_XPACK = 61259;
 
-export class SimConnectClient extends (EventEmitter as new () => TypedEmitter<ClientEvents>) {
+export class SimConnectClient extends EventEmitter<ClientEventMap> {
 	private sendBuffer: SendBuffer;
 	private packetIndex = 1;
 	private props: IClientProps;
@@ -47,7 +46,7 @@ export class SimConnectClient extends (EventEmitter as new () => TypedEmitter<Cl
 	private connectPromise: Promise<void> | undefined;
 	private connectPromiseResolve: undefined | ((value: void | PromiseLike<void>) => void) = undefined;
 	private connectPromiseReject: undefined | ((reason?: any) => void) = undefined;
-	constructor(props: IClientProps) {
+	public constructor(props: IClientProps) {
 		super();
 		this.sendBuffer = new SendBuffer();
 		this.props = props;
@@ -151,7 +150,7 @@ export class SimConnectClient extends (EventEmitter as new () => TypedEmitter<Cl
 
 	private sendPacket(packet: ReqPacketTypes): Promise<void> {
 		return new Promise((resolve, reject) => {
-			if (this.client && this.client.writable) {
+			if (this.client?.writable) {
 				this.sendBuffer.reset();
 				packet.write(this.sendBuffer, this.props.proto, this.packetIndex++);
 				this.props.logger?.debug(`SCC: send '${ReqID[packet.packetId]}'`);
@@ -187,7 +186,7 @@ export class SimConnectClient extends (EventEmitter as new () => TypedEmitter<Cl
 					break;
 				}
 				case RecvID.EXCEPTION: {
-					this.props.logger && this.props.logger.error('Exception', packet.data());
+					this.props.logger?.error('Exception', packet.data());
 					break;
 				}
 				case RecvID.EVENT_FRAME: {

@@ -1,44 +1,53 @@
-process.env.NODE_ENV = 'test';
-import {expect} from 'chai';
-import 'mocha';
+import {DeferredPromise} from '@open-draft/deferred-promise';
+import {afterAll, beforeAll, describe, expect, it} from 'vitest';
+import {sleep} from '../src/lib/date';
 import {SimConnectClient} from '../src/SimConnectClient';
 import {SimConnectServer} from '../src/SimConnectServer';
-import {sleep} from '../src/lib/date';
 import {DataType} from '../src/types/DataType';
 import {SimConnectPeriod} from '../src/types/SimConnectPeriod';
 
 let scs: undefined | SimConnectServer;
 
-export const hexFSXOpenRes = Buffer.from(
+/* const hexFSXOpenRes = Buffer.from(
 	'3401000004000000020000004d6963726f736f667420466c696768742053696d756c61746f7220580000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000a0000000000000097f40000000000000a0000000000000097f40000000000004301000000000000',
 	'hex',
-);
+); */
 
 describe('test Sim Connect client', () => {
-	before(() => {
+	beforeAll(() => {
 		scs = new SimConnectServer({port: 1337, name: 'Microsoft Flight Simulator X'});
 		scs.listen();
 	});
-	it('should connect to tcp socket and handle Open response', (done) => {
+	it('should connect to tcp socket and handle Open response', async () => {
+		const done = new DeferredPromise<void>();
 		const client = new SimConnectClient({name: 'unit-test', hostname: '127.0.0.1', port: 1337, proto: 2});
 		client.on('open', (data) => {
 			expect(data.name).to.be.eq('Microsoft Flight Simulator X');
 			expect(data.appVerMajor).to.be.eq(10);
 			client.close();
-			done();
+			done.resolve();
+		});
+		client.on('error', () => {
+			done.reject(new Error('error'));
 		});
 		client.connect();
+		await done;
 	});
 
-	it('should fail to connect', (done) => {
+	it('should fail to connect', async () => {
+		const done = new DeferredPromise<void>();
 		const client = new SimConnectClient({name: 'unit-test', hostname: '9871632498761239487', port: 8867, proto: 2});
+		client.on('open', (data) => {
+			done.reject(new Error('should not connect'));
+		});
 		client.on('error', () => {
-			done();
+			done.resolve();
 		});
 		client.on('close', () => {
 			// ignore
 		});
 		client.connect();
+		await done;
 	});
 	describe('test events', () => {
 		it('should subscribe to frame events', async () => {
@@ -82,7 +91,7 @@ describe('test Sim Connect client', () => {
 			client.close();
 		});
 	});
-	after(() => {
+	afterAll(() => {
 		if (scs) {
 			scs.close();
 		}

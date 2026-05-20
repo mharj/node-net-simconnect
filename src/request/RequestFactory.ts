@@ -1,9 +1,9 @@
-import {ReqPacketTypes} from '.';
-import {ReadBuffer} from '../lib/ReadBuffer';
+import type {ReadBuffer} from '../lib/ReadBuffer';
+import type {ReqPacketTypes} from '.';
 import {ReqID} from './AbstractRequest';
 import {AddToDataDefinition} from './AddToDataDefinition';
 import {Open} from './Open';
-import { RequestDataOnSimObject } from './RequestDataOnSimObject';
+import {RequestDataOnSimObject} from './RequestDataOnSimObject';
 import {SubscribeToSystemEvent} from './SubscribeToSystemEvent';
 import {Text} from './Text';
 
@@ -19,8 +19,8 @@ export class RequestFactory {
 		buff.position(0);
 		const packets: {headers: ReqHeadres; packet: ReqPacketTypes}[] = [];
 		while (buff.position() < buff.length()) {
-			let startPos = buff.position();
-			const headers = this.readHeaders(buff);
+			const startPos = buff.position();
+			const headers = RequestFactory.readHeaders(buff);
 			switch (headers.id) {
 				case ReqID.ID_OPEN: {
 					packets.push({headers, packet: Open.from(buff)});
@@ -43,7 +43,7 @@ export class RequestFactory {
 					break;
 				}
 				default:
-					throw new Error('unknown req packet id: ' + headers.id);
+					throw new Error(`unknown req packet id: ${headers.id}`);
 			}
 			if (startPos + headers.size !== buff.position()) {
 				throw new Error(`wrong packet size on {ReqID[headers.id]}`);
