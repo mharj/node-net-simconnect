@@ -1,2 +1,2 @@
 /** unknow group received */
-export const UNKNOWN_GROUP = 0xFFFFFFFF;
+export const UNKNOWN_GROUP = 0xffffffff;

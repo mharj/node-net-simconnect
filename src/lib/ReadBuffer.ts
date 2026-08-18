@@ -12,15 +12,15 @@ export class ReadBuffer {
 	public getChar(): string {
 		return String.fromCharCode(this.getByte());
 	}
-	public getShort(value: number) {
+	public getShort() {
 		const data = this.buff.readInt16LE(this.pos);
 		this.pos += 2;
 		return data;
 	}
-	public getInt(): number {
+	public getInt<T extends number = number>(): T {
 		const data = this.buff.readInt32LE(this.pos);
 		this.pos += 4;
-		return data;
+		return data as T;
 	}
 	public getUInt(): number {
 		const data = this.buff.readUInt32LE(this.pos);
@@ -59,5 +59,4 @@ export class ReadBuffer {
 	public getBuffer() {
 		return this.buff;
 	}
-
 }

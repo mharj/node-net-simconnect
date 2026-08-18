@@ -1,5 +1,5 @@
-import {ReadBuffer} from '../lib/ReadBuffer';
-import {RecvID} from './AbstractResponse';
+import type {ReadBuffer} from '../lib/ReadBuffer';
+import {RecvID, recvIdToString} from './AbstractResponse';
 import {ErrorResponsePacket} from './ErrorResponsePacket';
 import {FrameEventResponse} from './events/FrameEventResponse';
 import {OpenResponsePacket} from './OpenResponsePacket';
@@ -12,8 +12,8 @@ export class ResponseFactory {
 		const packets: ResPacketTypes[] = [];
 		buff.position(0);
 		while (buff.position() < buff.length()) {
-			let startPos = buff.position();
-			const headers = this.readHeaders(buff);
+			const startPos = buff.position();
+			const headers = ResponseFactory.readHeaders(buff);
 			switch (headers.id) {
 				case RecvID.EXCEPTION: {
 					packets.push(ErrorResponsePacket.from(buff));
@@ -32,10 +32,10 @@ export class ResponseFactory {
 					break;
 				}
 				default:
-					throw new Error('unknown res packet id: ' + headers.id);
+					throw new Error(`unknown res packet id: ${headers.id}`);
 			}
 			if (startPos + headers.size !== buff.position()) {
-				throw new Error(`wrong packet size on ${RecvID[headers.id]} size: ${headers.size} read: ${buff.position() - startPos}`);
+				throw new Error(`wrong packet size on ${recvIdToString(headers.id)} size: ${headers.size} read: ${buff.position() - startPos}`);
 			}
 		}
 		return packets;

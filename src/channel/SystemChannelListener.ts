@@ -1,4 +1,4 @@
-import {SendBuffer} from '../lib/SendBuffer';
+import type {SendBuffer} from '../lib/SendBuffer';
 import {ReqID} from '../request/AbstractRequest';
 import {RecvID} from '../response/AbstractResponse';
 import {AbstractEventListener} from './AbstractEventListener';
@@ -7,11 +7,10 @@ export class SystemEventListener extends AbstractEventListener<string, {}> {
 	public reqId = ReqID.ID_SUB_SYSTEM_EVENT;
 	public resId = RecvID.EVENT_FRAME;
 	protected handleReqWrite(send: SendBuffer): void {
-        send.putInt(this.channelId);
-        send.putString(this.reqPayload, 256);
+		send.putInt(this.channelId);
+		send.putString(this.reqPayload, 256);
 	}
-	protected handleResWrite(send: SendBuffer): void {
+	protected handleResWrite(_send: SendBuffer): void {
 		throw new Error('Method not implemented.');
 	}
 }
-

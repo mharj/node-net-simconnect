@@ -1,5 +1,5 @@
-import {ReadBuffer} from '../lib/ReadBuffer';
-import {SendBuffer} from '../lib/SendBuffer';
+import type {ReadBuffer} from '../lib/ReadBuffer';
+import type {SendBuffer} from '../lib/SendBuffer';
 import {AbstractRequest, ReqID} from './AbstractRequest';
 
 export interface IOpenRequestPayload extends Record<string, unknown> {
@@ -14,8 +14,8 @@ export interface IOpenRequestPayload extends Record<string, unknown> {
  * https://docs.flightsimulator.com/html/Programming_Tools/SimConnect/API_Reference/General/SimConnect_Open.htm
  */
 
-export class Open extends AbstractRequest<ReqID.ID_OPEN, IOpenRequestPayload> {
-	get packetId(): ReqID.ID_OPEN {
+export class Open extends AbstractRequest<typeof ReqID.ID_OPEN, IOpenRequestPayload> {
+	public get packetId(): typeof ReqID.ID_OPEN {
 		return ReqID.ID_OPEN;
 	}
 

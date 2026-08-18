@@ -11,7 +11,7 @@ export class SendBuffer {
 		this.pos = this.buffer.writeInt16LE(value, this.pos);
 		this.checkSize();
 	}
-	public putInt(value: number) {
+	public putInt<T extends number>(value: T) {
 		this.pos = this.buffer.writeInt32LE(value, this.pos);
 		this.checkSize();
 	}

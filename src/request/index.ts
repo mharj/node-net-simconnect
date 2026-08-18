@@ -1,7 +1,7 @@
-import {AddToDataDefinition} from './AddToDataDefinition';
-import {Open} from './Open';
-import {RequestDataOnSimObject} from './RequestDataOnSimObject';
-import {SubscribeToSystemEvent} from './SubscribeToSystemEvent';
-import {Text} from './Text';
+import type {AddToDataDefinition} from './AddToDataDefinition';
+import type {Open} from './Open';
+import type {RequestDataOnSimObject} from './RequestDataOnSimObject';
+import type {SubscribeToSystemEvent} from './SubscribeToSystemEvent';
+import type {Text} from './Text';
 
 export type ReqPacketTypes = Open | SubscribeToSystemEvent | Text | AddToDataDefinition | RequestDataOnSimObject;

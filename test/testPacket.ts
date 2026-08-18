@@ -15,8 +15,6 @@ const hexStreamOpenResponse = Buffer.from(
 const hexStreamQuitResponse = Buffer.from('0c0000000400000003000000', 'hex');
 const hexStreamFrameResponse = Buffer.from('200000000400000007000000ffffffff010000000000000092d8b9420000803f', 'hex');
 
-
-
 describe('test packet stuff', () => {
 	describe('responses', () => {
 		it('test open response packet', () => {

@@ -3,7 +3,7 @@
     "module": "esnext",
     "target": "es2017",
     "lib": ["es2017"],
-    "rootDir": "./src",
+    "rootDir": ".",
     "outDir": "./dist",
     "moduleResolution": "bundler",
     "sourceRoot": "./src",
@@ -22,6 +22,6 @@
     "strictNullChecks": true,
     "noUnusedLocals": true
   },
-  "include": ["src/**/*", "src/**/**/*"],
-  "exclude": ["node_modules", "**/*.spec.ts", "test"]
+  "include": ["src", "test"],
+  "exclude": ["node_modules"]
 }

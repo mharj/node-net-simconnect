@@ -3,13 +3,13 @@ import type {ProtocolVersion} from '.';
 import type {LoggerLike} from './lib/loggerLike';
 import {ReadBuffer} from './lib/ReadBuffer';
 import {SendBuffer} from './lib/SendBuffer';
-import {ReqID} from './request/AbstractRequest';
+import {ReqID, reqIdToString} from './request/AbstractRequest';
 import {RequestFactory} from './request/RequestFactory';
 import type {ISubSystemEventRequestPayload} from './request/SubscribeToSystemEvent';
 import {FrameEventResponse} from './response/events/FrameEventResponse';
 import {OpenResponsePacket} from './response/OpenResponsePacket';
 import {QuitResponsePacket} from './response/QuitResponsePacket';
-import {TextType} from './types/TextType';
+import {textTypeToStr} from './types/TextType';
 
 export interface IServerProps {
 	port: number;
@@ -66,7 +66,7 @@ export class SimConnectServer {
 			const buff = new ReadBuffer(data);
 			const packets = RequestFactory.from(buff);
 			for (const {packet} of packets) {
-				this.props.logger?.debug(`SCS: handle '${ReqID[packet.packetId]}'`);
+				this.props.logger?.debug(`SCS: handle '${reqIdToString(packet.packetId)}'`);
 				switch (packet.packetId) {
 					case ReqID.ID_OPEN: {
 						new OpenResponsePacket({
@@ -91,7 +91,7 @@ export class SimConnectServer {
 					}
 					case ReqID.text: {
 						const {type, message} = packet.data();
-						this.props.logger?.info(`(${TextType[type]}): ${message}`);
+						this.props.logger?.info(`(${textTypeToStr(type)}): ${message}`);
 					}
 				}
 			}

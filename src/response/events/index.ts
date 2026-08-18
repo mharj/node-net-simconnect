@@ -1,6 +1,6 @@
 import {RecvID} from '../AbstractResponse';
-import {ResPacketTypes} from '../ResponseFactory';
-import {FrameEvent, FrameEventResponse} from './FrameEventResponse';
+import type {ResPacketTypes} from '../ResponseFactory';
+import type {FrameEvent, FrameEventResponse} from './FrameEventResponse';
 
 export type AnyEvent = FrameEvent;
 

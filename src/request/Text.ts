@@ -1,6 +1,6 @@
-import {ReadBuffer} from '../lib/ReadBuffer';
-import {SendBuffer} from '../lib/SendBuffer';
-import {TextType} from '../types/TextType';
+import type {ReadBuffer} from '../lib/ReadBuffer';
+import type {SendBuffer} from '../lib/SendBuffer';
+import type {TextType} from '../types/TextType';
 import {AbstractRequest, ReqID} from './AbstractRequest';
 
 export interface ITextPayload extends Record<string, unknown> {
@@ -13,8 +13,8 @@ export interface ITextPayload extends Record<string, unknown> {
 /**
  * https://docs.flightsimulator.com/html/Programming_Tools/SimConnect/API_Reference/General/SimConnect_Text.htm?agt=index
  */
-export class Text extends AbstractRequest<ReqID.text, ITextPayload> {
-	get packetId(): ReqID.text {
+export class Text extends AbstractRequest<typeof ReqID.text, ITextPayload> {
+	public get packetId(): typeof ReqID.text {
 		return ReqID.text;
 	}
 	public static from(buff: ReadBuffer) {

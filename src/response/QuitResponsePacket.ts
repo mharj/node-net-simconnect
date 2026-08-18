@@ -1,6 +1,6 @@
-import {ReadBuffer} from '../lib/ReadBuffer';
-import {SendBuffer} from '../lib/SendBuffer';
-import {AbstractResponse, RecvID, ResponseAction} from './AbstractResponse';
+import type {ReadBuffer} from '../lib/ReadBuffer';
+import type {SendBuffer} from '../lib/SendBuffer';
+import {AbstractResponse, RecvID, type ResponseAction} from './AbstractResponse';
 
 export interface IOpenPayload {
 	readonly name: string;

@@ -1,6 +1,5 @@
 // import {ReadBuffer} from '../lib/ReadBuffer';
 
-
 /* export class ChannelFactory {
 	public static fromReq(buff: ReadBuffer) {
 		const headers = this.readHeaders(buff);

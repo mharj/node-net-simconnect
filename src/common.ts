@@ -1,7 +1,3 @@
-type ExtractNumbericValues<T extends object> = {
-	[K in keyof T]: T[K] extends number ? T[K] : never;
-}[keyof T];
-
 const simConnectDataTypeValues = {
 	INVALID: 0, // invalid data type
 	/** Integer */
@@ -41,10 +37,7 @@ const simConnectDataTypeValues = {
 	MAX: 17, // enum limit
 } as const;
 
-
-export type SimConnectDataType = ExtractNumbericValues<typeof simConnectDataTypeValues>;
-
-
+type EnumNumbers = (typeof simConnectDataTypeValues)[keyof typeof simConnectDataTypeValues];
 
 export const SimConnectDataType = {
 	...simConnectDataTypeValues,
@@ -53,7 +46,7 @@ export const SimConnectDataType = {
 	 * @param type The SimConnectDataType to get the size for.
 	 * @returns The size in bytes, or undefined for variable-length types.
 	 */
-	size: (type: ExtractNumbericValues<typeof simConnectDataTypeValues>): number | undefined => {
+	size: (type: EnumNumbers): number | undefined => {
 		switch (type) {
 			case simConnectDataTypeValues.FLOAT32:
 			case simConnectDataTypeValues.INT32:

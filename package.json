@@ -7,7 +7,9 @@
         "test": "test"
     },
     "scripts": {
-        "test": "vitest run --typecheck --coverage --no-file-parallelism"
+        "test": "vitest run --typecheck --coverage --no-file-parallelism",
+        "lint": "biome check",
+        "validate": "tsc --noEmit"
     },
     "mocha": {
         "exit": true,
@@ -39,17 +41,17 @@
     },
     "homepage": "https://github.com/mharj/node-net-simconnect#readme",
     "devDependencies": {
-        "@biomejs/biome": "^2.4.15",
+        "@biomejs/biome": "^2.5.9",
         "@open-draft/deferred-promise": "^3.0.0",
-        "@types/node": "^24.12.4",
-        "@vitest/coverage-v8": "^4.1.6",
-        "c8": "^11.0.0",
+        "@types/node": "^24.13.3",
+        "@vitest/coverage-v8": "^4.1.10",
+        "c8": "^12.0.0",
         "dotenv": "^17.4.2",
         "source-map-support": "^0.5.21",
         "ts-node": "^10.9.2",
-        "typescript": "^6.0.3",
-        "vite": "^8.0.13",
-        "vitest": "^4.1.6"
+        "typescript": "^7.0.2",
+        "vite": "^8.2.1",
+        "vitest": "^4.1.10"
     },
     "dependencies": {
         "tslib": "^2.8.1"

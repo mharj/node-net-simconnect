@@ -26,9 +26,9 @@ export const systemEventNames = [
 
 const lowercaseSystemEventNames = systemEventNames.map((name) => name.toLowerCase());
 
-export type SystemEventName = typeof systemEventNames[number];
+export type SystemEventName = (typeof systemEventNames)[number];
 
 export function isSystemEventName(name: string): name is SystemEventName {
-    const lName = name.toLowerCase();
+	const lName = name.toLowerCase();
 	return lowercaseSystemEventNames.includes(lName);
 }

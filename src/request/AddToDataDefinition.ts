@@ -1,6 +1,6 @@
-import {ReadBuffer} from '../lib/ReadBuffer';
-import {SendBuffer} from '../lib/SendBuffer';
-import {DataType} from '../types/DataType';
+import type {ReadBuffer} from '../lib/ReadBuffer';
+import type {SendBuffer} from '../lib/SendBuffer';
+import type {DataType} from '../types/DataType';
 import {AbstractRequest, ReqID} from './AbstractRequest';
 
 export interface IAddToDataDefinitionPayload extends Record<string, unknown> {
@@ -25,8 +25,8 @@ export interface IAddToDataDefinitionPayload extends Record<string, unknown> {
 /**
  * https://docs.flightsimulator.com/html/Programming_Tools/SimConnect/API_Reference/Events_And_Data/SimConnect_AddToDataDefinition.htm
  */
-export class AddToDataDefinition extends AbstractRequest<ReqID.addToClientDataDefinition, IAddToDataDefinitionPayload> {
-	get packetId(): ReqID.addToClientDataDefinition {
+export class AddToDataDefinition extends AbstractRequest<typeof ReqID.addToClientDataDefinition, IAddToDataDefinitionPayload> {
+	public get packetId(): typeof ReqID.addToClientDataDefinition {
 		return ReqID.addToClientDataDefinition;
 	}
 	public static from(buff: ReadBuffer) {

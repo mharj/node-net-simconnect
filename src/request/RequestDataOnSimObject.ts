@@ -1,6 +1,6 @@
-import {ReadBuffer} from '../lib/ReadBuffer';
-import {SendBuffer} from '../lib/SendBuffer';
-import {SimConnectPeriod} from '../types/SimConnectPeriod';
+import type {ReadBuffer} from '../lib/ReadBuffer';
+import type {SendBuffer} from '../lib/SendBuffer';
+import type {SimConnectPeriod} from '../types/SimConnectPeriod';
 import {AbstractRequest, ReqID} from './AbstractRequest';
 
 export interface IRequestDataOnSimObjectPayload extends Record<string, unknown> {
@@ -22,8 +22,8 @@ export interface IRequestDataOnSimObjectPayload extends Record<string, unknown> 
 /**
  * https://docs.flightsimulator.com/html/Programming_Tools/SimConnect/API_Reference/Events_And_Data/SimConnect_RequestDataOnSimObject.htm
  */
-export class RequestDataOnSimObject extends AbstractRequest<ReqID.ID_REQUEST_DATA_ON_SIM_OBJECT, IRequestDataOnSimObjectPayload> {
-	get packetId(): ReqID.ID_REQUEST_DATA_ON_SIM_OBJECT {
+export class RequestDataOnSimObject extends AbstractRequest<typeof ReqID.ID_REQUEST_DATA_ON_SIM_OBJECT, IRequestDataOnSimObjectPayload> {
+	public get packetId(): typeof ReqID.ID_REQUEST_DATA_ON_SIM_OBJECT {
 		return ReqID.ID_REQUEST_DATA_ON_SIM_OBJECT;
 	}
 	public static from(buff: ReadBuffer) {

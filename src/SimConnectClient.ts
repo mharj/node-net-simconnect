@@ -4,13 +4,13 @@ import type {LoggerLike} from './lib/loggerLike';
 import {ReadBuffer} from './lib/ReadBuffer';
 import {SendBuffer} from './lib/SendBuffer';
 import type {ReqPacketTypes} from './request/';
-import {ReqID} from './request/AbstractRequest';
+import {reqIdToString} from './request/AbstractRequest';
 import {AddToDataDefinition, type IAddToDataDefinitionPayload} from './request/AddToDataDefinition';
 import {type IOpenRequestPayload, Open} from './request/Open';
 import {type IRequestDataOnSimObjectPayload, RequestDataOnSimObject} from './request/RequestDataOnSimObject';
 import {SubscribeToSystemEvent} from './request/SubscribeToSystemEvent';
 import {type ITextPayload, Text} from './request/Text';
-import {RecvID} from './response/AbstractResponse';
+import {RecvID, recvIdToString} from './response/AbstractResponse';
 import {type AnyEvent, isEventResponse} from './response/events';
 import type {OpenResponsePacket} from './response/OpenResponsePacket';
 import type {IOpenPayload} from './response/QuitResponsePacket';
@@ -19,7 +19,7 @@ import type {OptionalExceptFor} from './types/helpper';
 import type {SystemEventName} from './types/SystemEventName';
 
 interface ClientEventMap {
-	open: [data: IOpenPayload]
+	open: [data: IOpenPayload];
 	close: [wasError: boolean];
 	error: [error: Error];
 	data: [payload: ResPacketTypes];
@@ -153,7 +153,7 @@ export class SimConnectClient extends EventEmitter<ClientEventMap> {
 			if (this.client?.writable) {
 				this.sendBuffer.reset();
 				packet.write(this.sendBuffer, this.props.proto, this.packetIndex++);
-				this.props.logger?.debug(`SCC: send '${ReqID[packet.packetId]}'`);
+				this.props.logger?.debug(`SCC: send '${reqIdToString(packet.packetId)}'`);
 				this.client.write(this.sendBuffer.getBuffer(), (err) => {
 					if (err) {
 						reject(err);
@@ -178,7 +178,7 @@ export class SimConnectClient extends EventEmitter<ClientEventMap> {
 		const buff = new ReadBuffer(data);
 		const packets = ResponseFactory.from(buff);
 		for (const packet of packets) {
-			this.props.logger?.debug(`SCC: recv packet '${RecvID[packet.packetId]}'`);
+			this.props.logger?.debug(`SCC: recv packet '${recvIdToString(packet.packetId)}'`);
 			switch (packet.packetId) {
 				case RecvID.OPEN: {
 					this.emit('open', (packet as OpenResponsePacket).data());

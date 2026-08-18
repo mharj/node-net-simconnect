@@ -1,6 +1,6 @@
-import {ReadBuffer} from '../lib/ReadBuffer';
-import {SendBuffer} from '../lib/SendBuffer';
-import {isSystemEventName, SystemEventName} from '../types/SystemEventName';
+import type {ReadBuffer} from '../lib/ReadBuffer';
+import type {SendBuffer} from '../lib/SendBuffer';
+import {isSystemEventName, type SystemEventName} from '../types/SystemEventName';
 import {AbstractRequest, ReqID} from './AbstractRequest';
 
 export interface ISubSystemEventRequestPayload extends Record<string, unknown> {
@@ -12,8 +12,8 @@ export interface ISubSystemEventRequestPayload extends Record<string, unknown> {
  * https://docs.flightsimulator.com/html/Programming_Tools/SimConnect/API_Reference/Events_And_Data/SimConnect_SubscribeToSystemEvent.htm
  */
 
-export class SubscribeToSystemEvent extends AbstractRequest<ReqID.ID_SUB_SYSTEM_EVENT, ISubSystemEventRequestPayload> {
-	get packetId(): ReqID.ID_SUB_SYSTEM_EVENT {
+export class SubscribeToSystemEvent extends AbstractRequest<typeof ReqID.ID_SUB_SYSTEM_EVENT, ISubSystemEventRequestPayload> {
+	public get packetId(): typeof ReqID.ID_SUB_SYSTEM_EVENT {
 		return ReqID.ID_SUB_SYSTEM_EVENT;
 	}
 

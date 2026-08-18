@@ -1,37 +1,45 @@
-import {ProtocolVersion} from '..';
-import {SendBuffer} from '../lib/SendBuffer';
+import type {ProtocolVersion} from '..';
+import type {SendBuffer} from '../lib/SendBuffer';
 
 /**
  * https://docs.flightsimulator.com/html/Programming_Tools/SimConnect/API_Reference/Structures_And_Enumerations/SIMCONNECT_RECV_ID.htm
  */
-export enum RecvID {
-	NULL = 0,
-	EXCEPTION = 1,
-	OPEN = 2,
-	QUIT = 3,
-	EVENT = 4,
-	EVENT_OBJECT_ADDREMOVE = 5,
-	EVENT_FILENAME = 6,
-	EVENT_FRAME = 7,
-	SIMOBJECT_DATA = 8,
-	SIMOBJECT_DATA_BYTYPE = 9,
-	WEATHER_OBSERVATION = 10,
-	CLOUD_STATE = 11,
-	ASSIGNED_OBJECT_ID = 12,
-	RESERVED_KEY = 13,
-	CUSTOM_ACTION = 14,
-	SYSTEM_STATE = 15,
-	CLIENT_DATA = 16,
-	EVENT_WEATHER_MODE = 17,
-	AIRPORT_LIST = 18,
-	VOR_LIST = 19,
-	NDB_LIST = 20,
-	WAYPOINT_LIST = 21,
-	EVENT_MULTIPLAYER_SERVER_STARTED = 22,
-	EVENT_MULTIPLAYER_CLIENT_STARTED = 23,
-	EVENT_MULTIPLAYER_SESSION_ENDED = 24,
-	EVENT_RACE_END = 25,
-	EVENT_RACE_LAP = 26,
+export const RecvID = {
+	NULL: 0,
+	EXCEPTION: 1,
+	OPEN: 2,
+	QUIT: 3,
+	EVENT: 4,
+	EVENT_OBJECT_ADDREMOVE: 5,
+	EVENT_FILENAME: 6,
+	EVENT_FRAME: 7,
+	SIMOBJECT_DATA: 8,
+	SIMOBJECT_DATA_BYTYPE: 9,
+	WEATHER_OBSERVATION: 10,
+	CLOUD_STATE: 11,
+	ASSIGNED_OBJECT_ID: 12,
+	RESERVED_KEY: 13,
+	CUSTOM_ACTION: 14,
+	SYSTEM_STATE: 15,
+	CLIENT_DATA: 16,
+	EVENT_WEATHER_MODE: 17,
+	AIRPORT_LIST: 18,
+	VOR_LIST: 19,
+	NDB_LIST: 20,
+	WAYPOINT_LIST: 21,
+	EVENT_MULTIPLAYER_SERVER_STARTED: 22,
+	EVENT_MULTIPLAYER_CLIENT_STARTED: 23,
+	EVENT_MULTIPLAYER_SESSION_ENDED: 24,
+	EVENT_RACE_END: 25,
+	EVENT_RACE_LAP: 26,
+} as const;
+
+const reverseRecvID = Object.fromEntries(Object.entries(RecvID).map(([key, value]) => [value, key]));
+
+export type RecvID = (typeof RecvID)[keyof typeof RecvID];
+
+export function recvIdToString(value: RecvID): string {
+	return reverseRecvID[value] ?? `UNKNOWN_RECV_ID_${value}`;
 }
 
 export interface ResponseAction {
@@ -45,11 +53,11 @@ interface IResponseHeader {
 }
 export const RESPONSE_HEADER_SIZE = 12;
 
-export abstract class AbstractResponse<R = RecvID, D = {}> {
-	public abstract packetId: number;
+export abstract class AbstractResponse<R extends RecvID = RecvID, D = {}> {
+	public abstract packetId: R;
 	protected headers: IResponseHeader | undefined;
 	protected payload: D;
-	constructor(data: D) {
+	public constructor(data: D) {
 		this.payload = data;
 	}
 

@@ -1,11 +1,11 @@
-import {ProtocolVersion} from '../..';
+import type {ProtocolVersion} from '../..';
 import {UNKNOWN_GROUP} from '../../lib/consts';
-import {ReadBuffer} from '../../lib/ReadBuffer';
-import {SendBuffer} from '../../lib/SendBuffer';
-import {AbstractResponse, RecvID, RESPONSE_HEADER_SIZE} from '../AbstractResponse';
+import type {ReadBuffer} from '../../lib/ReadBuffer';
+import type {SendBuffer} from '../../lib/SendBuffer';
+import {AbstractResponse, RESPONSE_HEADER_SIZE, type RecvID} from '../AbstractResponse';
 
-export interface EventPayload<R extends RecvID, Payload extends any> {
-	packetId: RecvID;
+export interface EventPayload<R extends RecvID, Payload> {
+	packetId: R;
 	channelId: number;
 	groupId: number | undefined;
 	eventData: number;
@@ -31,7 +31,7 @@ export abstract class AbstractEventResponse<R extends RecvID, D extends {}> exte
 	public groupId: number | undefined; // UNKNOWN_GROUP
 	public eventData: number;
 
-	constructor(payload: D, {channelId, groupdId, eventData}: IEventOptions) {
+	public constructor(payload: D, {channelId, groupdId, eventData}: IEventOptions) {
 		super(payload);
 		this.channelId = channelId;
 		this.groupId = groupdId;

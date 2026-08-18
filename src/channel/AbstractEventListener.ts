@@ -37,7 +37,7 @@ export abstract class AbstractEventListener<P = unknown, D = {}> {
 		this.handleReqWrite(send);
 		this.writeReqHeader(send, protocol, index);
 	}
-	public writeRes(send: SendBuffer, protocol: ProtocolVersion, index: number) {
+	public writeRes(send: SendBuffer, protocol: ProtocolVersion, _index: number) {
 		send.reset(); // clear pos and size
 		send.position(RESPONSE_HEADER_SIZE);
 		this.handleResWrite(send);
