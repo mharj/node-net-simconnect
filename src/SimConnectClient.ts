@@ -136,14 +136,14 @@ export class SimConnectClient extends EventEmitter<ClientEventMap> {
 	}
 
 	public requestClientData(
-		clientDataID: number,
-		dataRequestID: number,
-		clientDataDefineID: number,
-		period: number,
-		flags: number,
-		origin: number,
-		interval: number,
-		limit: number,
+		_clientDataID: number,
+		_dataRequestID: number,
+		_clientDataDefineID: number,
+		_period: number,
+		_flags: number,
+		_origin: number,
+		_interval: number,
+		_limit: number,
 	) {
 		// TODO: implement
 	}

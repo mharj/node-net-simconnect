@@ -39,7 +39,8 @@
         "useArrowFunction": "off",
         "useLiteralKeys": "error",
         "useOptionalChain": "error",
-        "useWhile": "error"
+        "useWhile": "error",
+        "noBannedTypes": "off"
       },
       "correctness": {
         "noConstAssign": "error",

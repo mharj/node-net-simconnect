@@ -42,14 +42,14 @@ describe('test packet stuff', () => {
 			expect(hexStreamFrameResponse.compare(sendBuffer.getBuffer())).to.be.eq(0);
 		});
 	});
-	describe('requests', () => {
-		/* 		it('test quit response packet', () => {
+	/* describe('requests', () => {
+		it('test quit response packet', () => {
 			const sendBuffer = new SendBuffer();
 			const readBuffer = new ReadBuffer(hexStreamOpenResponse);
 			const packet = ResponseFactory.from(readBuffer);
 			expect(packet.packetId).to.be.eq(2);
 			packet.write(sendBuffer, 4);
 			expect(hexStreamOpenResponse.compare(sendBuffer.getBuffer())).to.be.eq(0);
-		}); */
-	});
+		}); 
+	}); */
 });

@@ -18,10 +18,10 @@ export interface IOpenPayload {
 
 export class QuitResponsePacket extends AbstractResponse<RecvID, undefined> implements ResponseAction {
 	public packetId = RecvID.QUIT;
-	public static from(buff: ReadBuffer) {
+	public static from(_buff: ReadBuffer) {
 		return new QuitResponsePacket(undefined);
 	}
-	protected handleWrite(send: SendBuffer): void {
+	protected handleWrite(_send: SendBuffer): void {
 		// nothing
 	}
 }

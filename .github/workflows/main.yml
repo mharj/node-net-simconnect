@@ -1,0 +1,72 @@
+name: CI/CD
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+permissions:
+  id-token: write # Required for OIDC
+  contents: read
+
+env:
+  # Setting an environment variable with the value of a configuration variable
+  PUBLISH_BRANCH: "refs/heads/main"
+  PACKAGE_NAME: "unknown"
+  PACKAGE_VERSION: "unknown"
+  PACKAGE_MANAGER: "npm"
+  PACKAGE_PRIVATE: "false"
+  NPM_VERSION: "unknown"
+  HAVE_VALIDATE_SCRIPT: false
+  HAVE_LINT_SCRIPT: false
+  HAVE_TEST_SCRIPT: false
+  HAVE_COVERAGE_SCRIPT: false
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+      - uses: luolapeikko/github-actions/read-package-info@v0.0.3
+      - uses: pnpm/action-setup@ea17c68df8912ef543352723c149a84f56e3d413 # v6.1.0
+        if: env.PACKAGE_MANAGER == 'pnpm'
+      - uses: actions/setup-node@v7
+        with:
+          node-version: 'lts/*'
+          registry-url: 'https://registry.npmjs.org'
+
+      - name: Install dependencies
+        run: ${{ env.PACKAGE_MANAGER }} install
+
+      - name: Run validate
+        if: env.HAVE_VALIDATE_SCRIPT == 'true'
+        run: ${{ env.PACKAGE_MANAGER }} run validate
+
+      - name: Run linter checks
+        if: env.HAVE_LINT_SCRIPT == 'true'
+        run: ${{ env.PACKAGE_MANAGER }} run lint --reporter=github
+
+      - name: Run unit tests and code coverage
+        if: env.HAVE_TEST_SCRIPT == 'true'
+        run: ${{ env.PACKAGE_MANAGER }} test
+
+      - name: Run code coverage
+        if: env.HAVE_COVERAGE_SCRIPT == 'true'
+        run: ${{ env.PACKAGE_MANAGER }} run coverage
+
+      - name: Run and publish code coverage
+        if: |
+          github.ref == env.PUBLISH_BRANCH &&
+          env.HAVE_COVERAGE_SCRIPT == 'true'
+        uses: qltysh/qlty-action/coverage@c9b09987143d1e4ac955f4803c7bea742102feb5 # v2.4.0
+        with:
+          oidc: true
+          files: coverage/lcov.info
+
+      # npm publish when PR done
+      - name: Publish ${{env.PACKAGE_NAME}} ${{env.PACKAGE_VERSION}}
+        run: npm publish --no-git-checks --access public
+        if: |
+          env.PACKAGE_PRIVATE != 'true' &&
+          github.ref == env.PUBLISH_BRANCH &&
+          env.PACKAGE_VERSION != env.NPM_VERSION

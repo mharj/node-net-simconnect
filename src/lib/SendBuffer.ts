@@ -4,9 +4,7 @@ export class SendBuffer {
 	private pos = 0;
 	private size = 0;
 	private buffer = Buffer.alloc(RECEIVE_SIZE);
-	public constructor() {
-		// nothing yet
-	}
+
 	public putShort(value: number) {
 		this.pos = this.buffer.writeInt16LE(value, this.pos);
 		this.checkSize();
