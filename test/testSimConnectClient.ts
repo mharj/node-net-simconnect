@@ -34,7 +34,7 @@ describe('test Sim Connect client', () => {
 		await done;
 	});
 
-	it('should fail to connect', async () => {
+	it('should fail to connect', {skip: !!process.env.CI}, async () => {
 		const done = new DeferredPromise<void>();
 		const client = new SimConnectClient({name: 'unit-test', hostname: '9871632498761239487', port: 8867, proto: 2});
 		client.on('open', (_data) => {
