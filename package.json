@@ -42,7 +42,7 @@
     },
     "homepage": "https://github.com/mharj/node-net-simconnect#readme",
     "devDependencies": {
-        "@biomejs/biome": "^2.6.8",
+        "@biomejs/biome": "^2.6.9",
         "@open-draft/deferred-promise": "^3.0.0",
         "@types/node": "^24.19.2",
         "@vitest/coverage-v8": "^5.1.1",
